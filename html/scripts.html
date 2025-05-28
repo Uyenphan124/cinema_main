@@ -1,0 +1,376 @@
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const authPopup = document.getElementById('auth-popup');
+        const loginBtn = document.getElementById('login-btn');
+        const closePopup = document.getElementById('close-popup');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userFullname = document.getElementById('user-fullname');
+        const authForm = document.getElementById('auth-form');
+        const toggleLink = document.getElementById('toggle-link');
+        const authTitle = document.getElementById('auth-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const fullnameGroup = document.getElementById('fullname-group');
+        const ageGroup = document.getElementById('age-group');
+        const genderGroup = document.getElementById('gender-group');
+        const phoneGroup = document.getElementById('phone-group');
+    
+        let isLoginMode = true;
+    
+        // Hiển thị popup đăng nhập
+        loginBtn.addEventListener('click', () => {
+            authPopup.classList.remove('hidden');
+        });
+    
+        // Đóng popup
+        closePopup.addEventListener('click', () => {
+            authPopup.classList.add('hidden');
+        });
+    
+        // Chuyển đổi giữa đăng nhập và đăng ký
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+            updateAuthMode();
+        });
+    
+        // Cập nhật giao diện popup theo chế độ (Đăng nhập/Đăng ký)
+        function updateAuthMode() {
+            if (isLoginMode) {
+                authTitle.textContent = 'Đăng Nhập';
+                submitBtn.textContent = 'Đăng Nhập';
+                toggleLink.textContent = 'Đăng ký ngay';
+                fullnameGroup.classList.add('hidden');
+                ageGroup.classList.add('hidden');
+                genderGroup.classList.add('hidden');
+                phoneGroup.classList.add('hidden');
+            } else {
+                authTitle.textContent = 'Đăng Ký';
+                submitBtn.textContent = 'Đăng Ký';
+                toggleLink.textContent = 'Đăng nhập ngay';
+                fullnameGroup.classList.remove('hidden');
+                ageGroup.classList.remove('hidden');
+                genderGroup.classList.remove('hidden');
+                phoneGroup.classList.remove('hidden');
+            }
+        }
+    
+        // Xử lý form đăng nhập/đăng ký
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+    
+            if (isLoginMode) {
+                // Đăng nhập
+                try {
+                    const response = await fetch('http://localhost:8000/api/users/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        userFullname.textContent = data.user.FULLNAME;
+                        loginBtn.classList.add('hidden');
+                        logoutBtn.classList.remove('hidden');
+                        authPopup.classList.add('hidden');
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Lỗi đăng nhập:', error);
+                    alert('Lỗi server, vui lòng thử lại!');
+                }
+            } else {
+                // Đăng ký
+                const fullname = document.getElementById('fullname').value;
+                const age = document.getElementById('age').value;
+                const gender = document.getElementById('gender').value === 'true';
+                const phone = document.getElementById('phone').value;
+                const id = 'user' + Date.now();
+    
+                try {
+                    const response = await fetch('http://localhost:8000/api/users/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id, FULLNAME: fullname, Age: parseInt(age), Gender: gender, Phone: phone, Email: email, password })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        alert(data.message + '\nVui lòng đăng nhập với email và mật khẩu vừa đăng ký.');
+                        authPopup.classList.add('hidden');
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Lỗi đăng ký:', error);
+                    alert('Lỗi server, vui lòng thử lại!');
+                }
+            }
+        });
+    
+        // Xử lý đăng xuất
+        logoutBtn.addEventListener('click', () => {
+            userFullname.textContent = '';
+            loginBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+        });
+    
+        console.log("DOMContentLoaded for banner carousel");
+        fetchBannerImages();
+        fetchMovies();
+        fetchShowtimes();
+        fetchUsers();
+        document.getElementById("prev-btn").addEventListener("click", prevBanner);
+        document.getElementById("next-btn").addEventListener("click", nextBanner);
+    });
+    
+    // Tìm kiếm phim
+    function searchMovies() {
+        const input = document.getElementById('search').value.toLowerCase();
+        const movies = document.querySelectorAll('.movie-card');
+        movies.forEach(movie => {
+            const title = movie.querySelector('h3').textContent.toLowerCase();
+            movie.style.display = title.includes(input) ? "block" : "none";
+        });
+    }
+    
+    // Banner carousel
+    let bannerImages = [];
+    let currentBannerIndex = 0;
+    
+    function fetchBannerImages() {
+        bannerImages = [
+            '/img/yae.jpg',
+            '/img/mavuika.jpg',
+            '/img/citlali2.jpg'
+        ];
+        updateBanner();
+    }
+    
+    function updateBanner() {
+        const prevIndex = (currentBannerIndex - 1 + bannerImages.length) % bannerImages.length;
+        const nextIndex = (currentBannerIndex + 1) % bannerImages.length;
+        document.getElementById("prev-img").src = bannerImages[prevIndex];
+        document.getElementById("banner-img").src = bannerImages[currentBannerIndex];
+        document.getElementById("next-img").src = bannerImages[nextIndex];
+    }
+    
+    function nextBanner() {
+        currentBannerIndex = (currentBannerIndex + 1) % bannerImages.length;
+        updateBanner();
+    }
+    
+    function prevBanner() {
+        currentBannerIndex = (currentBannerIndex - 1 + bannerImages.length) % bannerImages.length;
+        updateBanner();
+    }
+    
+    // Fetch và hiển thị danh sách phim
+    let allMovies = [];
+    
+    async function fetchMovies() {
+        try {
+            const response = await fetch('http://localhost:8000/api/movies');
+            const movies = await response.json();
+            allMovies = movies;
+            const movieContainer = document.getElementById('movie-container');
+            movieContainer.innerHTML = '';
+            movies.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.className = 'movie-card';
+                movieCard.innerHTML = `
+                    <img src="${movie.img || 'https://via.placeholder.com/200x300?text=' + encodeURIComponent(movie.Movie)}" alt="${movie.Movie}">
+                    <h3>${movie.Movie}</h3>
+                    <p>${new Date(movie.Release_Date).toLocaleDateString()}</p>
+                `;
+                movieCard.addEventListener('click', () => showMovieDetails(movie));
+                movieContainer.appendChild(movieCard);
+            });
+    
+            const moviesTableBody = document.getElementById('movies-table-body');
+            moviesTableBody.innerHTML = '';
+            movies.forEach(movie => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${movie._id}</td>
+                    <td>${movie.Movie}</td>
+                    <td>${movie.Country}</td>
+                    <td>${movie.Genre}</td>
+                    <td>${new Date(movie.Release_Date).toLocaleDateString()}</td>
+                    <td>${movie.Time_minutes}</td>
+                    <td>${movie.Description}</td>
+                    <td><img src="${movie.img || 'https://via.placeholder.com/50?text=' + encodeURIComponent(movie.Movie)}" alt="${movie.Movie}" style="width: 50px;"></td>
+                    <td>
+                        <button onclick="editMovie('${movie._id}')">Sửa</button>
+                        <button onclick="deleteMovie('${movie._id}')">Xóa</button>
+                    </td>
+                `;
+                moviesTableBody.appendChild(row);
+            });
+    
+            const showtimeMovieDropdown = document.getElementById('showtime-movie');
+            showtimeMovieDropdown.innerHTML = '<option value="" disabled selected>Chọn phim</option>';
+            movies.forEach(movie => {
+                const option = document.createElement('option');
+                option.value = movie._id;
+                option.textContent = movie.Movie;
+                showtimeMovieDropdown.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Lỗi lấy danh sách phim:', error);
+        }
+    }
+    
+    function updateRightPanel(currentMovieId) {
+        const rightPanel = document.getElementById('right-panel');
+        rightPanel.innerHTML = '<h3>Phim Khác</h3>';
+        const otherMovies = allMovies.filter(movie => movie._id !== currentMovieId);
+        otherMovies.forEach(movie => {
+            const div = document.createElement('div');
+            div.className = 'other-movie-card';
+            div.innerHTML = `
+                <img src="${movie.img || 'https://via.placeholder.com/100x150?text=' + encodeURIComponent(movie.Movie)}" alt="${movie.Movie}">
+                <h4>${movie.Movie}</h4>
+            `;
+            div.addEventListener('click', () => showMovieDetails(movie));
+            rightPanel.appendChild(div);
+        });
+    }
+    
+    async function showMovieDetails(movie) {
+        document.getElementById('movie-list').classList.add('hidden');
+        document.getElementById('movie-details-section').classList.remove('hidden');
+    
+        document.getElementById('movie-poster').src = movie.img || 'https://via.placeholder.com/200x300?text=' + encodeURIComponent(movie.Movie);
+        document.getElementById('movie-title').textContent = movie.Movie;
+        document.getElementById('movie-Release-Date').textContent = new Date(movie.Release_Date).toLocaleDateString();
+        document.getElementById('movie-Country').textContent = movie.Country;
+        document.getElementById('movie-Genre').textContent = movie.Genre;
+        document.getElementById('movie-Time_minutes').textContent = movie.Time_minutes;
+        document.getElementById('movie-Description').textContent = movie.Description;
+    
+        updateRightPanel(movie._id);
+    
+        try {
+            const response = await fetch(`http://localhost:8000/api/showtimes/by-movie/${movie._id}`);
+            const showtimes = await response.json();
+            const showtimeList = document.getElementById('showtime-list');
+            showtimeList.innerHTML = '';
+            showtimes.forEach(showtime => {
+                const div = document.createElement('div');
+                div.textContent = `Phòng ${showtime.ID_Room} - ${new Date(showtime.StartTime).toLocaleString()} - Ghế: ${showtime.TotalSeats}`;
+                showtimeList.appendChild(div);
+            });
+        } catch (error) {
+            console.error('Lỗi lấy suất chiếu:', error);
+        }
+    }
+    
+    document.getElementById('back-btn').addEventListener('click', () => {
+        document.getElementById('movie-details-section').classList.add('hidden');
+        document.getElementById('movie-list').classList.remove('hidden');
+    });
+    
+    async function fetchShowtimes() {
+        try {
+            const response = await fetch('http://localhost:8000/api/showtimes');
+            const showtimes = await response.json();
+            const showtimesTableBody = document.getElementById('showtimes-table-body');
+            showtimesTableBody.innerHTML = '';
+            showtimes.forEach(showtime => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${showtime._id}</td>
+                    <td>${showtime.ID_Movie.Movie}</td>
+                    <td>${showtime.ID_Room}</td>
+                    <td>${new Date(showtime.StartTime).toLocaleString()}</td>
+                    <td>${showtime.TotalSeats}</td>
+                    <td>
+                        <button onclick="editShowtime('${showtime._id}')">Sửa</button>
+                        <button onclick="deleteShowtime('${showtime._id}')">Xóa</button>
+                    </td>
+                `;
+                showtimesTableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Lỗi lấy suất chiếu:', error);
+        }
+    }
+    
+    async function fetchUsers() {
+        try {
+            const response = await fetch('http://localhost:8000/api/users');
+            const users = await response.json();
+            const usersTableBody = document.getElementById('users-table-body');
+            usersTableBody.innerHTML = '';
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.FULLNAME}</td>
+                    <td>${user.Email}</td>
+                    <td>${user.Age}</td>
+                    <td>${user.Gender ? 'Nam' : 'Nữ'}</td>
+                    <td>${user.Phone}</td>
+                    <td>
+                        <button onclick="deleteUser('${user._id}')">Xóa</button>
+                    </td>
+                `;
+                usersTableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Lỗi lấy danh sách người dùng:', error);
+        }
+    }
+    
+    async function editMovie(movieId) {
+        const response = await fetch(`http://localhost:8000/api/movies/${movieId}`);
+        const movie = await response.json();
+        document.getElementById('movie-id').value = movie._id;
+        document.getElementById('movie-title-input').value = movie.Movie;
+        document.getElementById('movie-country').value = movie.Country;
+        document.getElementById('movie-genre').value = movie.Genre;
+        document.getElementById('movie-release-date').value = new Date(movie.Release_Date).toISOString().slice(0, 16);
+        document.getElementById('movie-duration').value = movie.Time_minutes;
+        document.getElementById('movie-description').value = movie.Description;
+        document.getElementById('movie-image-url').value = movie.img;
+        document.getElementById('add-movie-title').textContent = 'Sửa Phim';
+        document.getElementById('submit-movie-btn').textContent = 'Cập Nhật';
+        document.getElementById('add-movie-popup').classList.remove('hidden');
+    }
+    
+    async function deleteMovie(movieId) {
+        if (confirm('Bạn có chắc muốn xóa phim này?')) {
+            await fetch(`http://localhost:8000/api/movies/${movieId}`, { method: 'DELETE' });
+            fetchMovies();
+        }
+    }
+    
+    async function editShowtime(showtimeId) {
+        const response = await fetch(`http://localhost:8000/api/showtimes/${showtimeId}`);
+        const showtime = await response.json();
+        document.getElementById('showtime-id').value = showtime._id;
+        document.getElementById('showtime-movie').value = showtime.ID_Movie._id;
+        document.getElementById('showtime-room').value = showtime.ID_Room;
+        document.getElementById('showtime-start-time').value = new Date(showtime.StartTime).toISOString().slice(0, 16);
+        document.getElementById('showtime-total-seats').value = showtime.TotalSeats;
+        document.getElementById('add-showtime-title').textContent = 'Sửa Suất Chiếu';
+        document.getElementById('submit-showtime-btn').textContent = 'Cập Nhật';
+        document.getElementById('add-showtime-popup').classList.remove('hidden');
+    }
+    
+    async function deleteShowtime(showtimeId) {
+        if (confirm('Bạn có chắc muốn xóa suất chiếu này?')) {
+            await fetch(`http://localhost:8000/api/showtimes/${showtimeId}`, { method: 'DELETE' });
+            fetchShowtimes();
+        }
+    }
+    
+    async function deleteUser(userId) {
+        if (confirm('Bạn có chắc muốn xóa người dùng này?')) {
+            await fetch(`http://localhost:8000/api/users/${userId}`, { method: 'DELETE' });
+            fetchUsers();
+        }
+    }
+    

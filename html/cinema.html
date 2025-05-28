@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Cinema</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/right-panel.css">
+    <link rel="stylesheet" href="../css/user.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/showtime.css">
+    <link rel="stylesheet" href="../css/showtime-admin.css">
+    <style>
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+        }
+        .detail-left {
+            flex: 2;
+            padding-right: 20px;
+        }
+        .right-panel {
+            flex: 1;
+            height: 500px;
+            overflow-y: auto;
+            border-left: 1px solid #ccc;
+            padding-left: 20px;
+        }
+        .other-movie-card {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .other-movie-card img {
+            margin-right: 10px;
+            width: 100px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .other-movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .other-movie-card:active {
+            transform: scale(0.98);
+        }
+        .movie-card {
+            display: block;
+            margin: 10px 0;
+            text-align: center;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+        .movie-card img {
+            width: 200px;
+            height: 300px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: none;
+            outline: none;
+        }
+        .movie-card h3 {
+            margin: 0;
+        }
+        .error-message {
+            color: #ff4d4d;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast-close {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .movie-list {
+            display: none;
+        }
+        .movie-list:not(.hidden) {
+            display: block;
+        }
+        .banner, .hot-movies-title, .upcoming-toggle {
+            display: block;
+        }
+        .back-btn {
+            display: none;
+        }
+        .back-btn.active {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cinema Nahida</div>
+        <nav>
+            <ul>
+                <li><a href="cinema.html">Trang Chủ</a></li>
+                <li><a href="movies.html">Phim</a></li>
+                <li><a href="#">Sự Kiện</a></li>
+                <li><a href="#">Rạp/Giá Vé</a></li>
+                <li><input type="text" placeholder="Tìm kiếm phim..." id="search" onkeyup="searchMovies()"></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <span id="user-fullname" class="user-fullname"></span>
+            <div class="admin-section hidden" id="admin-section">
+                <select id="admin-options">
+                    <option value="" disabled selected>Chọn mục quản lý</option>
+                    <option value="home">Trang Chủ</option>
+                    <option value="manage-movies">Quản lý phim đang chiếu</option>
+                    <option value="manage-upcoming-movies">Quản lý phim sắp chiếu</option>
+                    <option value="manage-showtimes">Quản lý suất chiếu</option>
+                    <option value="manage-users">Quản lý user</option>
+                </select>
+            </div>
+            
+        </div>
+        <button id="login-btn" class="login-btn">Đăng Nhập</button>
+        <button class="logout-btn hidden" id="logout-btn">Đăng Xuất</button>
+    </header>
+    <!-- Popup Đăng nhập/Đăng ký -->
+    <div class="popup hidden" id="auth-popup">
+        <div class="popup-content">
+            <span class="close-btn" id="close-popup">×</span>
+            <div class="auth-form">
+                <h2 id="auth-title">Đăng Nhập</h2>
+                <form id="auth-form">
+                    <div class="form-group hidden" id="fullname-group">
+                        <label for="fullname">Họ tên:</label>
+                        <input type="text" id="fullname">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mật khẩu:</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group hidden" id="age-group">
+                        <label for="age">Tuổi:</label>
+                        <input type="number" id="age">
+                    </div>
+                    <div class="form-group hidden" id="gender-group">
+                        <label for="gender">Giới tính:</label>
+                        <select id="gender">
+                            <option value="true">Nam</option>
+                            <option value="false">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="phone-group">
+                        <label for="phone">Số điện thoại:</label>
+                        <input type="text" id="phone">
+                    </div>
+                    <button type="submit" id="submit-btn">Đăng Nhập</button>
+                    <p id="toggle-auth">Bạn chưa có tài khoản? <a href="#" id="toggle-link">Đăng ký ngay</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phim Hot -->
+    <h2 class="hot-movies-title">Phim Hot</h2>
+    <section class="banner">
+        <div class="carousel">
+            <button class="prev-btn" id="prev-btn"><</button>
+            <img id="prev-img" class="prev">
+            <img id="banner-img" class="active">
+            <img id="next-img" class="next">
+            <button class="next-btn" id="next-btn">></button>
+        </div>
+    </section>
+
+    <!-- Toggle giữa Phim Đang Chiếu và Phim Sắp Chiếu -->
+    <div class="upcoming-toggle">
+        <button class="toggle-btn active" data-type="now-showing">Phim đang chiếu</button>
+        <button class="toggle-btn" data-type="upcoming">Phim sắp chiếu</button>
+    </div>
+
+    <!-- Phim Đang Chiếu -->
+    <section class="movie-list" id="movie-list">
+        <h2>Phim Đang Chiếu</h2>
+        <div class="movies" id="movie-container">
+            <!-- Chỉ hiển thị ảnh và tên phim -->
+        </div>
+    </section>
+
+    <!-- Phim Sắp Chiếu -->
+    <section class="movie-list hidden" id="upcoming-movie-list">
+        <h2>Phim Sắp Chiếu</h2>
+        <div class="movies" id="upcoming-movie-container">
+            <div class="movie-card">
+                <!-- Nội dung phim sắp chiếu -->
+            </div>
+            <!-- ... -->
+        </div>
+    </section>
+
+    <!-- Chi tiết phim -->
+    <section id="movie-details-section" class="hidden">
+        <div class="main-content">
+            <div class="detail-left">
+                <button id="back-btn-now-showing" class="back-btn">Quay Lại Phim Đang Chiếu</button>
+                <button id="back-btn-upcoming" class="back-btn">Quay Lại Phim Sắp Chiếu</button>
+                <div class="movie-details-wrapper">
+                    <div class="detail-image">
+                        <img id="movie-poster" src="" alt="Movie Poster">
+                    </div>
+                    <div class="detail-content">
+                        <h2 id="movie-title"></h2>
+                        <div class="movie-details-content">
+                            <div class="movie-info">
+                                <p><strong>Ngày chiếu:</strong> <span id="movie-Release-Date"></span></p>
+                                <p><strong>Quốc gia:</strong> <span id="movie-Country"></span></p>
+                                <p><strong>Thể loại:</strong> <span id="movie-Genre"></span></p>
+                                <p><strong>Thời lượng:</strong> <span id="movie-Time_minutes"></span> phút</p>
+                                <p><strong>Mô tả:</strong> <span id="movie-Description"></span></p>
+                            </div>
+                        </div>
+                        <div class="showtime-schedule">
+                            <h3>Lịch Chiếu</h3>
+                            <div id="showtime-list" class="showtime-list">
+                                <!-- Lịch chiếu sẽ được hiển thị ở đây -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel" id="right-panel">
+                <!-- Danh sách phim khác sẽ được hiển thị ở đây -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Wrapper cho nội dung chính -->
+    <div class="content-wrapper">
+        <!-- Nội dung chính đã được bao bọc trong các section trên -->
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h4>GIỚI THIỆU</h4>
+                <ul>
+                    <li><a href="#">Về Chúng Tôi</a></li>
+                    <li><a href="#">Thoả Thuận Sử Dụng</a></li>
+                    <li><a href="#">Quy Chế Hoạt Động</a></li>
+                    <li><a href="#">Chính Sách Bảo Mật</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>GÓC ĐIỆN ẢNH</h4>
+                <ul>
+                    <li><a href="#">Thể Loại Phim</a></li>
+                    <li><a href="#">Bình Luận Phim</a></li>
+                    <li><a href="#">Blog Điện Ảnh</a></li>
+                    <li><a href="#">Phim Hay Tháng</a></li>
+                    <li><a href="#">Phim IMAX</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>HỖ TRỢ</h4>
+                <ul>
+                    <li><a href="#">Góp Ý</a></li>
+                    <li><a href="#">Sale & Services</a></li>
+                    <li><a href="#">Rạp / Giá Vé</a></li>
+                    <li><a href="#">Tuyển Dụng</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Tải script cơ bản ban đầu -->
+    <script type="module" src="../js/script.js"></script>
+    <script type="module" src="../js/right-panel.js"></script>
+    <script type="module" src="../js/showtime.js"></script>
+    <script type="module" src="../js/upcoming-right-panel.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+    <script>
+        // Improved fetch handler with better error handling
+        async function fetchWithErrorHandling(url, options = {}) {
+            try {
+                options.headers = {
+                    ...options.headers,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                };
+
+                const response = await fetch(url, {
+                    ...options,
+                    mode: 'cors',
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+                }
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Response is not JSON');
+                }
+
+                return await response.json();
+            } catch (error) {
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    throw new Error('Network error: Unable to connect to the server. Please check your internet connection or server status.');
+                }
+                console.error(`API Error (${url}):`, error.message);
+                throw error;
+            }
+        }
+
+        // Function to display error messages on the UI
+        function displayError(container, message) {
+            container.innerHTML = `<p class="error-message">${message}</p>`;
+        }
+        // Hàm tải danh sách phim sắp chiếu
+        async function fetchUpcomingMovies() {
+            const upcomingMovieContainer = document.getElementById("upcoming-movie-container");
+            if (!upcomingMovieContainer) {
+                console.error("upcoming-movie-container element not found!");
+                return;
+            }
+            upcomingMovieContainer.innerHTML = "<p>Đang tải danh sách...</p>";
+            try {
+                const movies = await fetchWithErrorHandling('http://localhost:8000/api/upcoming-movies');
+                if (!movies || !Array.isArray(movies) || movies.length === 0) {
+                    upcomingMovieContainer.innerHTML = "<p>Không có phim sắp chiếu nào để hiển thị.</p>";
+                    return;
+                }
+                upcomingMovieContainer.innerHTML = "";
+                movies.forEach((movie, index) => {
+                    const movieCard = document.createElement("button");
+                    movieCard.classList.add("movie-card");
+                    movieCard.setAttribute("data-index", index.toString());
+                    movieCard.setAttribute("data-movie-id", movie._id);
+                    movieCard.innerHTML = `
+                        <img src="${movie.img || 'https://via.placeholder.com/200x300?text=No+Image'}" alt="${movie.Movie || 'Movie Poster'}">
+                        <h3>${movie.Movie || 'Tên không có'}</h3>
+                    `;
+                    upcomingMovieContainer.appendChild(movieCard);
+                    movieCard.addEventListener("click", async () => {
+                        try {
+                            const module = await import('../js/upcoming-right-panel.js');
+                            module.showUpcomingMovieDetailsFromRightPanel(index);
+                        } catch (err) {
+                            console.error('Failed to load upcoming-right-panel.js:', err);
+                            displayError(upcomingMovieContainer, 'Lỗi: Không thể tải chi tiết phim.');
+                        }
+                    });
+                });
+            } catch (error) {
+                displayError(upcomingMovieContainer, error.message || 'Lỗi: Không thể kết nối đến server. Vui lòng kiểm tra lại.');
+            }
+        }
+
+        // Hàm tải danh sách phim đang chiếu
+        async function fetchMovies() {
+            const movieContainer = document.getElementById("movie-container");
+            if (!movieContainer) {
+                console.error("movie-container element not found!");
+                return;
+            }
+            movieContainer.innerHTML = "<p>Đang tải danh sách...</p>";
+            try {
+                const movies = await fetchWithErrorHandling('http://localhost:8000/api/movies');
+                if (!movies || !Array.isArray(movies) || movies.length === 0) {
+                    movieContainer.innerHTML = "<p>Không có phim đang chiếu nào để hiển thị.</p>";
+                    return;
+                }
+                movieContainer.innerHTML = "";
+                movies.forEach((movie, index) => {
+                    const movieCard = document.createElement("button");
+                    movieCard.classList.add("movie-card");
+                    movieCard.setAttribute("data-index", index.toString());
+                    movieCard.setAttribute("data-movie-id", movie._id);
+                    movieCard.innerHTML = `
+                        <img src="${movie.img || 'https://via.placeholder.com/200x300?text=No+Image'}" alt="${movie.Movie || 'Movie Poster'}">
+                        <h3>${movie.Movie || 'Tên không có'}</h3>
+                    `;
+                    movieContainer.appendChild(movieCard);
+                    movieCard.addEventListener("click", async () => {
+                        try {
+                            const module = await import('../js/right-panel.js');
+                            module.showMovieDetailsFromRightPanel(index);
+                        } catch (err) {
+                            console.error('Failed to load right-panel.js:', err);
+                            displayError(movieContainer, 'Lỗi: Không thể tải chi tiết phim.');
+                        }
+                    });
+                });
+            } catch (error) {
+                displayError(movieContainer, error.message || 'Lỗi: Không thể kết nối đến server. Vui lòng kiểm tra lại.');
+            }
+        }
+
+        // Toggle giữa Phim Đang Chiếu và Phim Sắp Chiếu
+        function setupToggle() {
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            if (toggleButtons) {
+                toggleButtons.forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        toggleButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        const type = btn.getAttribute('data-type');
+                        try {
+                            if (type === 'now-showing') {
+                                const movieList = document.getElementById('movie-list');
+                                const upcomingMovieList = document.getElementById('upcoming-movie-list');
+                                if (movieList) movieList.classList.remove('hidden');
+                                if (upcomingMovieList) upcomingMovieList.classList.add('hidden');
+                                await fetchMovies();
+                                const module = await import('../js/right-panel.js');
+                                module.fetchRightPanelMovies(0);
+                            } else if (type === 'upcoming') {
+                                const movieList = document.getElementById('movie-list');
+                                const upcomingMovieList = document.getElementById('upcoming-movie-list');
+                                if (movieList) movieList.classList.add('hidden');
+                                if (upcomingMovieList) upcomingMovieList.classList.remove('hidden');
+                                await fetchUpcomingMovies();
+                                const module = await import('../js/upcoming-right-panel.js');
+                                module.fetchUpcomingRightPanelMovies(0);
+                            }
+                        } catch (err) {
+                            console.error('Failed to load module for toggle:', err);
+                            displayError(document.getElementById(type === 'now-showing' ? 'movie-container' : 'upcoming-movie-container'), 'Lỗi: Không thể tải danh sách phim.');
+                        }
+                    });
+                });
+            }
+        }
+
+        // Admin navigation: chỉ mở 1 tab quản lý, chọn tiếp sẽ focus vào tab đó, chọn Trang Chủ sẽ đóng tab quản lý và focus về tab cinema
+        function setupAdminNavigation() {
+            const adminOptions = document.getElementById("admin-options");
+            if (adminOptions) {
+                adminOptions.addEventListener("change", (e) => {
+                    const selectedOption = e.target.value;
+                    let url = "";
+                    if (selectedOption === "home") {
+                        // Nếu là tab quản lý, đóng tab và focus về tab cinema
+                        if (window.opener && !window.opener.closed && window.location.search.includes("admin=1")) {
+                            window.opener.focus();
+                            window.close();
+                            return;
+                        }
+                        url = "../html/index.html";
+                    } else if (selectedOption === "manage-movies") {
+                        url = "../html/manage-movies.html?admin=1";
+                    } else if (selectedOption === "manage-upcoming-movies") {
+                        url = "../html/manage-upcoming-movies.html?admin=1";
+                    } else if (selectedOption === "manage-showtimes") {
+                        url = "../html/manage-showtimes.html?admin=1";
+                    } else if (selectedOption === "manage-users") {
+                        url = "../html/manage-users.html?admin=1";
+                    }
+                    if (url) {
+                        // Nếu là tab quản lý, chuyển trang ngay trên tab đó
+                        if (window.location.search.includes("admin=1")) {
+                            window.location.href = url;
+                        } else {
+                            // Ở cinema.html, chỉ mở 1 tab quản lý (tên 'adminTab'), chọn tiếp sẽ focus vào tab đó
+                            window.open(url, 'adminTab');
+                        }
+                    }
+                    adminOptions.value = "";
+                });
+            }
+        }
+
+        // Load all scripts and initialize the page
+        async function initializePage() {
+            const userFullname = document.getElementById('user-fullname');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const adminSection = document.getElementById('admin-section');
+
+            if (!userFullname || !loginBtn || !logoutBtn || !adminSection) {
+                console.error('One or more DOM elements not found:', { userFullname, loginBtn, logoutBtn, adminSection });
+                return;
+            }
+
+            // Reset to logged-out state
+            userFullname.textContent = '';
+            loginBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            adminSection.classList.add('hidden');
+
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user && user.email && user.fullname) {
+                userFullname.textContent = user.fullname;
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                if (user.email.endsWith('@example.com')) {
+                    adminSection.classList.remove('hidden');
+                }
+            }
+
+            // Gán sự kiện Đăng Nhập (chỉ gán 1 lần)
+            loginBtn.onclick = () => {
+                const authPopup = document.getElementById('auth-popup');
+                if (authPopup) authPopup.classList.remove('hidden');
+            };
+
+            // Gán sự kiện Đăng Xuất (chỉ gán 1 lần)
+            logoutBtn.onclick = () => {
+                localStorage.removeItem('user');
+                initializePage();
+            };
+
+            setupToggle();
+            setupAdminNavigation();
+
+            const activeToggle = document.querySelector('.toggle-btn.active');
+            if (activeToggle && activeToggle.getAttribute('data-type') === 'upcoming') {
+                await fetchUpcomingMovies();
+            } else {
+                await fetchMovies();
+            }
+        }
+
+        document.getElementById('login-btn')?.addEventListener('click', () => {
+            const authPopup = document.getElementById('auth-popup');
+            if (authPopup) authPopup.classList.remove('hidden');
+        });
+
+        document.getElementById('close-popup')?.addEventListener('click', () => {
+            const authPopup = document.getElementById('auth-popup');
+            if (authPopup) authPopup.classList.add('hidden');
+        });
+
+        document.getElementById('auth-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email')?.value;
+            const password = document.getElementById('password')?.value;
+            const fullname = document.getElementById('fullname')?.value || '';
+            const age = document.getElementById('age')?.value || '';
+            const gender = document.getElementById('gender')?.value || '';
+            const phone = document.getElementById('phone')?.value || '';
+
+            if (email && password) {
+                const user = {
+                    email: email,
+                    password: password,
+                    fullname: fullname || email.split('@')[0],
+                    age: age || '',
+                    gender: gender || '',
+                    phone: phone || '',
+                    isAdmin: email.endsWith('@example.com')
+                };
+
+                localStorage.setItem('user', JSON.stringify(user));
+                const authPopup = document.getElementById('auth-popup');
+                if (authPopup) authPopup.classList.add('hidden');
+                location.reload(); // THÊM DÒNG NÀY
+            }
+        });
+
+        // Back button for Now Showing
+        document.getElementById('back-btn-now-showing')?.addEventListener('click', async () => {
+            const movieDetailsSection = document.getElementById('movie-details-section');
+            const movieListSection = document.getElementById('movie-list');
+            const upcomingMovieListSection = document.getElementById('upcoming-movie-list');
+            const bannerSection = document.querySelector('.banner');
+            const hotMoviesTitle = document.querySelector('.hot-movies-title');
+            const toggleSection = document.querySelector('.upcoming-toggle');
+
+            if (movieDetailsSection) movieDetailsSection.classList.add('hidden');
+            if (movieListSection) movieListSection.classList.remove('hidden');
+            if (upcomingMovieListSection) upcomingMovieListSection.classList.add('hidden');
+            if (bannerSection) bannerSection.style.display = 'block';
+            if (hotMoviesTitle) hotMoviesTitle.style.display = 'block';
+            if (toggleSection) toggleSection.style.display = 'flex';
+
+            await fetchMovies();
+            const module = await import('../js/right-panel.js');
+            module.fetchRightPanelMovies(0);
+        });
+
+        // Back button for Upcoming
+        document.getElementById('back-btn-upcoming')?.addEventListener('click', async () => {
+            const movieDetailsSection = document.getElementById('movie-details-section');
+            const movieListSection = document.getElementById('movie-list');
+            const upcomingMovieListSection = document.getElementById('upcoming-movie-list');
+            const bannerSection = document.querySelector('.banner');
+            const hotMoviesTitle = document.querySelector('.hot-movies-title');
+            const toggleSection = document.querySelector('.upcoming-toggle');
+
+            if (movieDetailsSection) movieDetailsSection.classList.add('hidden');
+            if (movieListSection) movieListSection.classList.add('hidden');
+            if (upcomingMovieListSection) upcomingMovieListSection.classList.remove('hidden');
+            if (bannerSection) bannerSection.style.display = 'block';
+            if (hotMoviesTitle) hotMoviesTitle.style.display = 'block';
+            if (toggleSection) toggleSection.style.display = 'flex';
+
+            await fetchUpcomingMovies();
+            const module = await import('../js/upcoming-right-panel.js');
+            module.fetchUpcomingRightPanelMovies(0);
+        });
+
+        document.addEventListener("DOMContentLoaded", initializePage);
+
+        function setupToggleLinkEvent() {
+            const toggleLink = document.getElementById('toggle-link');
+            if (toggleLink) {
+                toggleLink.onclick = function(e) {
+                    e.preventDefault();
+                    const authTitle = document.getElementById('auth-title');
+                    const fullnameGroup = document.getElementById('fullname-group');
+                    const ageGroup = document.getElementById('age-group');
+                    const genderGroup = document.getElementById('gender-group');
+                    const phoneGroup = document.getElementById('phone-group');
+                    const toggleAuth = document.getElementById('toggle-auth');
+
+                    if (authTitle && fullnameGroup && ageGroup && genderGroup && phoneGroup && toggleAuth) {
+                        if (authTitle.textContent === 'Đăng Nhập') {
+                            authTitle.textContent = 'Đăng Ký';
+                            fullnameGroup.classList.remove('hidden');
+                            ageGroup.classList.remove('hidden');
+                            genderGroup.classList.remove('hidden');
+                            phoneGroup.classList.remove('hidden');
+                            toggleAuth.innerHTML = 'Đã có tài khoản? <a href="#" id="toggle-link">Đăng nhập ngay</a>';
+                        } else {
+                            authTitle.textContent = 'Đăng Nhập';
+                            fullnameGroup.classList.add('hidden');
+                            ageGroup.classList.add('hidden');
+                            genderGroup.classList.add('hidden');
+                            phoneGroup.classList.add('hidden');
+                            toggleAuth.innerHTML = 'Bạn chưa có tài khoản? <a href="#" id="toggle-link">Đăng ký ngay</a>';
+                        }
+                        setupToggleLinkEvent(); // Gán lại sự kiện cho link mới
+                    }
+                };
+            }
+        }   
+        setupToggleLinkEvent();
+
+        function searchMovies() {
+            const query = document.getElementById('search').value.trim().toLowerCase();
+
+            // Lấy danh sách phim đang chiếu
+            const movieCards = document.querySelectorAll('#movie-container .movie-card');
+            movieCards.forEach(card => {
+                const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+                card.style.display = title.includes(query) ? '' : 'none';
+            });
+
+            // Lấy danh sách phim sắp chiếu
+            const upcomingCards = document.querySelectorAll('#upcoming-movie-container .movie-card');
+            upcomingCards.forEach(card => {
+                const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+                card.style.display = title.includes(query) ? '' : 'none';
+            });
+
+            // Nếu không có gì trong ô tìm kiếm, hiển thị lại tất cả
+            if (!query) {
+                movieCards.forEach(card => card.style.display = '');
+                upcomingCards.forEach(card => card.style.display = '');
+            }
+        }
+    </script>
+
+</body>
+</html>

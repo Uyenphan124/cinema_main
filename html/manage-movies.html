@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Phim Đang Chiếu</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <style>
+        .manage-section {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            background-color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #666;
+            background-color: #333;
+            color: #fff;
+        }
+        .form-section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cinema Nahida</div>
+        <nav>
+            <ul>
+                <li><a href="../html/cinema.html">Trang Chủ</a></li>
+                <li><a href="#">Phim</a></li>
+                <li><a href="#">Sự Kiện</a></li>
+                <li><a href="#">Rạp/Giá Vé</a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <span id="user-fullname" class="user-fullname"></span>
+            <div class="admin-section" id="admin-section">
+                <select id="admin-options">
+                    <option value="" disabled selected>Chọn mục quản lý</option>
+                    <option value="home">Trang Chủ</option>
+                    <option value="manage-movies">Quản lý phim đang chiếu</option>
+                    <option value="manage-upcoming-movies">Quản lý phim sắp chiếu</option>
+                    <option value="manage-showtimes">Quản lý suất chiếu</option>
+                    <option value="manage-users">Quản lý user</option>
+                </select>
+            </div>
+            <button class="logout-btn" id="logout-btn">Đăng Xuất</button>
+        </div>
+    </header>
+
+    <div class="manage-section">
+        <h2>Quản Lý Phim Đang Chiếu</h2>
+        <button id="add-movie-btn">Thêm Phim</button>
+
+        <!-- Form Thêm/Sửa Phim -->
+        <div class="form-section popup-movie-form hidden" id="add-movie-form-section">
+            <h2 id="add-movie-title">Thêm Phim</h2>
+            <form id="add-movie-form">
+                <div class="form-group">
+                    <label for="movie-id">ID Phim:</label>
+                    <input type="text" id="movie-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="movie-title-input">Tên Phim:</label>
+                    <input type="text" id="movie-title-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="movie-country">Quốc Gia:</label>
+                    <input type="text" id="movie-country" required>
+                </div>
+                <div class="form-group">
+                    <label for="movie-genre">Thể Loại:</label>
+                    <input type="text" id="movie-genre" required>
+                </div>
+                <div class="form-group">
+                    <label for="movie-release-date">Ngày Phát Hành:</label>
+                    <input type="datetime-local" id="movie-release-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="movie-duration">Thời Lượng (phút):</label>
+                    <input type="number" id="movie-duration" required>
+                </div>
+                <div class="form-group">
+                    <label for="movie-description">Mô Tả:</label>
+                    <textarea id="movie-description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="movie-image-url">URL Ảnh:</label>
+                    <input type="text" id="movie-image-url" required>
+                </div>
+                <button type="submit" id="submit-movie-btn">Thêm</button>
+                <button type="button" id="cancel-movie-btn">Hủy</button>
+            </form>
+        </div>
+
+        <!-- Danh sách phim -->
+        <table id="movies-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Phim</th>
+                    <th>Quốc Gia</th>
+                    <th>Thể Loại</th>
+                    <th>Ngày Phát Hành</th>
+                    <th>Thời Lượng (phút)</th>
+                    <th>Mô Tả</th>
+                    <th>Ảnh</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody id="movies-table-body"></tbody>
+        </table>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h4>GIỚI THIỆU</h4>
+                <ul>
+                    <li><a href="#">Về Chúng Tôi</a></li>
+                    <li><a href="#">Thoả Thuận Sử Dụng</a></li>
+                    <li><a href="#">Quy Chế Hoạt Động</a></li>
+                    <li><a href="#">Chính Sách Bảo Mật</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>GÓC ĐIỆN ẢNH</h4>
+                <ul>
+                    <li><a href="#">Thể Loại Phim</a></li>
+                    <li><a href="#">Bình Luận Phim</a></li>
+                    <li><a href="#">Blog Điện Ảnh</a></li>
+                    <li><a href="#">Phim Hay Tháng</a></li>
+                    <li><a href="#">Phim IMAX</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>HỖ TRỢ</h4>
+                <ul>
+                    <li><a href="#">Góp Ý</a></li>
+                    <li><a href="#">Sale & Services</a></li>
+                    <li><a href="#">Rạp / Giá Vé</a></li>
+                    <li><a href="#">Tuyển Dụng</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/manage-movies.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+    <div class="popup-overlay" id="popup-overlay"></div>
+</body>
+</html>

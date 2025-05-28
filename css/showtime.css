@@ -1,0 +1,109 @@
+/* showtime.css */
+
+/* Container chính cho lịch chiếu */
+.showtime-schedule {
+    margin-top: 5px; /* Giảm khoảng cách phía trên */
+    padding: 6px; /* Giảm padding */
+    background-color: #1e1e1e; /* Khớp với màu nền của header/footer trong styles.css */
+    border-radius: 3px; /* Giảm border-radius */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề "Lịch Chiếu" */
+.showtime-schedule h3 {
+    font-size: 1.0em; /* Thu nhỏ kích thước chữ */
+    color: #fff;
+    margin-bottom: 6px; /* Giảm khoảng cách phía dưới */
+    border-left: 2px solid orange;
+    padding-left: 5px; /* Giảm padding */
+}
+
+/* Danh sách ngày chiếu */
+.showtime-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 1.2em;      /* Tăng cỡ chữ cho toàn bộ danh sách */
+    min-height: 48px;      /* Đảm bảo chiều cao tối thiểu */
+    min-width: 140px;      /* Đảm bảo chiều rộng tối thiểu */
+}
+
+/* Tab ngày chiếu */
+.showtime-date-tabs {
+    display: flex;
+    gap: 10px; /* Giảm khoảng cách giữa các tab */
+    margin-bottom: 6px; /* Giảm khoảng cách phía dưới */
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+/* Ẩn thanh cuộn nhưng vẫn cho phép cuộn */
+.showtime-date-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.showtime-date-tab {
+    flex: 0 0 auto;
+    padding: 3px 8px; /* Thu nhỏ padding */
+    background-color: #e0e0e0;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.7em; /* Thu nhỏ kích thước chữ */
+    transition: background-color 0.3s;
+    color: #333;
+}
+
+.showtime-date-tab.active {
+    background-color: orange;
+    color: white;
+}
+
+.showtime-date-tab:hover {
+    background-color: #d0d0d0;
+}
+
+/* Danh sách suất chiếu */
+.showtime-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* Giảm khoảng cách giữa các suất chiếu */
+    overflow-x: auto;
+}
+
+/* Ẩn thanh cuộn nhưng vẫn cho phép cuộn */
+.showtime-slots::-webkit-scrollbar {
+    display: none;
+}
+
+.showtime-slot {
+    flex: 0 0 auto;    /* Nút lịch chiếu (ví dụ class .showtime-btn hoặc selector cụ thể) */
+    .showtime-btn,
+    .schedule-btn,
+    .movie-schedule-btn,
+    .movie-time-btn {
+        font-size: 2em !important;
+        padding: 12px 32px !important;
+        border-radius: 8px !important;
+        min-width: 120px;
+        min-height: 48px;
+        /* Giữ màu sắc và style cũ nếu có */
+    }
+    padding: 3px 8px; /* Thu nhỏ padding */
+    background-color: orange;
+    color: white;
+    border-radius: 3px;
+    font-size: 0.7em; /* Thu nhỏ kích thước chữ */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.showtime-slot:hover {
+    background-color: #e69500;
+}
+
+/* Thông báo không có lịch chiếu */
+.showtime-list .no-showtimes {
+    font-style: italic;
+    color: #666;
+    font-size: 0.7em; /* Thu nhỏ kích thước chữ */
+}

@@ -1,0 +1,61 @@
+.right-panel {
+    padding: 20px; /* Thống nhất với #right-panel */
+    /* Xóa flex: 1 */
+}
+
+.right-panel h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.right-movie-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.right-movie-card {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #222;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.right-movie-card:hover {
+    background-color: #333;
+}
+
+.right-movie-card img {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.right-movie-info {
+    text-align: left;
+}
+
+.right-movie-info h4 {
+    margin: 0 0 5px;
+    font-size: 16px;
+}
+
+.right-movie-info p {
+    margin: 2px 0;
+    font-size: 14px;
+    color: #ccc;
+}
+.other-movie-card {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    cursor: pointer;
+}
+.other-movie-card img {
+    margin-right: 10px;
+}

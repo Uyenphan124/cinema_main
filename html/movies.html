@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Phim</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/movies.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Cinema Nahida</div>
+        <nav>
+            <ul>
+                <li><a href="cinema.html">Trang Chủ</a></li>
+                <li><a href="movies.html">Phim</a></li>
+                <li><a href="#">Sự Kiện</a></li>
+                <li><a href="#">Rạp/Giá Vé</a></li>
+                <li>
+                    <input
+                        type="text"
+                        id="search"
+                        class="search-input"
+                        placeholder="Tìm kiếm phim..."
+                        onkeyup="searchMovies()"
+                        style="margin-left:16px;"
+                    >
+                </li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <span id="user-fullname" class="user-fullname"></span>
+        </div>
+    </header>
+
+    <main>
+        <section class="movie-list">
+            <h2>Phim Đang Chiếu</h2>
+            <div id="movie-container"></div>
+        </section>
+        <section class="movie-list">
+            <h2>Phim Sắp Chiếu</h2>
+            <div id="upcoming-movie-container"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h4>GIỚI THIỆU</h4>
+                <ul>
+                    <li><a href="#">Về Chúng Tôi</a></li>
+                    <li><a href="#">Thỏa Thuận Sử Dụng</a></li>
+                    <li><a href="#">Quy Chế Hoạt Động</a></li>
+                    <li><a href="#">Chính Sách Bảo Mật</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>GÓC ĐIỆN ẢNH</h4>
+                <ul>
+                    <li><a href="#">Thể Loại Phim</a></li>
+                    <li><a href="#">Bình Luận Phim</a></li>
+                    <li><a href="#">Blog Điện Ảnh</a></li>
+                    <li><a href="#">Phim Hay Tháng</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>HỖ TRỢ</h4>
+                <ul>
+                    <li><a href="#">Góp Ý</a></li>
+                    <li><a href="#">Sale & Services</a></li>
+                    <li><a href="#">Rạp / Giá Vé</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/movies.js"></script>
+    <script>
+        // Hiển thị tên đăng nhập nếu đã đăng nhập ở trang chủ (lưu ở localStorage/sessionStorage)
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const fullnameEl = document.getElementById('user-fullname');
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === '1';
+            if (user && user.fullname && user.fullname !== "Khách" && isLoggedIn) {
+                fullnameEl.textContent = user.fullname;
+                fullnameEl.classList.add('logged-in');
+            } else {
+                fullnameEl.textContent = user.fullname || "Khách";
+                fullnameEl.classList.remove('logged-in');
+            }
+        });
+
+        function searchMovies() {
+            const query = document.getElementById('search').value.trim().toLowerCase();
+            // Đang chiếu
+            const movieCards = document.querySelectorAll('#movie-container .movie-card');
+            movieCards.forEach(card => {
+                const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+                card.style.display = title.includes(query) ? '' : 'none';
+            });
+            // Sắp chiếu
+            const upcomingCards = document.querySelectorAll('#upcoming-movie-container .movie-card');
+            upcomingCards.forEach(card => {
+                const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+                card.style.display = title.includes(query) ? '' : 'none';
+            });
+            // Nếu không nhập gì thì hiện lại tất cả
+            if (!query) {
+                movieCards.forEach(card => card.style.display = '');
+                upcomingCards.forEach(card => card.style.display = '');
+            }
+        }
+    </script>
+</body>
+</html>

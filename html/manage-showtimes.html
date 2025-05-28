@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Suất Chiếu</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/showtime-admin.css">
+    <style>
+        .manage-section {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            background-color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #666;
+            background-color: #333;
+            color: #fff;
+        }
+        .form-section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cinema Nahida</div>
+        <nav>
+            <ul>
+                <li><a href="../html/cinema.html">Trang Chủ</a></li>
+                <li><a href="#">Phim</a></li>
+                <li><a href="#">Sự Kiện</a></li>
+                <li><a href="#">Rạp/Giá Vé</a></li>
+            </ul>
+        </nav>
+
+        <div class="user-section">
+            <span id="user-fullname" class="user-fullname"></span>
+            <div class="admin-section" id="admin-section">
+                <select id="admin-options">
+                    <option value="" disabled selected>Chọn mục quản lý</option>
+                    <option value="home">Trang Chủ</option>
+                    <option value="manage-movies">Quản lý phim đang chiếu</option>
+                    <option value="manage-upcoming-movies">Quản lý phim sắp chiếu</option>
+                    <option value="manage-showtimes">Quản lý suất chiếu</option>
+                    <option value="manage-users">Quản lý user</option>
+                </select>
+            </div>
+            <button class="logout-btn" id="logout-btn">Đăng Xuất</button>
+        </div>
+    </header>
+
+    <div class="manage-section">
+        <h2>Quản Lý Suất Chiếu</h2>
+        <button id="add-showtime-btn">Thêm Suất Chiếu</button>
+
+        <div class="form-section hidden" id="add-showtime-form-section">
+            <h2 id="add-showtime-title">Thêm Suất Chiếu</h2>
+            <form id="add-showtime-form">
+                <div class="form-group">
+                    <label for="showtime-id">ID Suất Chiếu:</label>
+                    <input type="text" id="showtime-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="showtime-movie">Phim:</label>
+                    <select id="showtime-movie" required>
+                        <option value="" disabled selected>Chọn phim</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="showtime-room">Rạp:</label>
+                    <input type="text" id="showtime-room" required>
+                </div>
+                <div class="form-group">
+                    <label for="showtime-start-time">Giờ Chiếu:</label>
+                    <input type="datetime-local" id="showtime-start-time" required>
+                </div>
+                <div class="form-group">
+                    <label for="showtime-total-seats">Tổng Số Ghế:</label>
+                    <input type="number" id="showtime-total-seats" required>
+                </div>
+                <button type="submit" id="submit-showtime-btn">Thêm</button>
+                <button type="button" id="cancel-showtime-btn">Hủy</button>
+            </form>
+        </div>
+
+        <!-- Danh sách suất chiếu -->
+        <table id="showtimes-table">
+            <thead>
+                <tr>
+                    <th>ID Suất Chiếu</th>
+                    <th>Phim</th>
+                    <th>Rạp</th>
+                    <th>Giờ Chiếu</th>
+                    <th>Tổng Số Ghế</th>
+                    <th>Ghế đã đặt</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody id="showtimes-table-body"></tbody>
+        </table>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h4>GIỚI THIỆU</h4>
+                <ul>
+                    <li><a href="#">Về Chúng Tôi</a></li>
+                    <li><a href="#">Thoả Thuận Sử Dụng</a></li>
+                    <li><a href="#">Quy Chế Hoạt Động</a></li>
+                    <li><a href="#">Chính Sách Bảo Mật</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>GÓC ĐIỆN ẢNH</h4>
+                <ul>
+                    <li><a href="#">Thể Loại Phim</a></li>
+                    <li><a href="#">Bình Luận Phim</a></li>
+                    <li><a href="#">Blog Điện Ảnh</a></li>
+                    <li><a href="#">Phim Hay Tháng</a></li>
+                    <li><a href="#">Phim IMAX</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>HỖ TRỢ</h4>
+                <ul>
+                    <li><a href="#">Góp Ý</a></li>
+                    <li><a href="#">Sale & Services</a></li>
+                    <li><a href="#">Rạp / Giá Vé</a></li>
+                    <li><a href="#">Tuyển Dụng</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/showtime-admin.js"></script>
+    <script type="module" src="../js/manage-showtimes.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+</body>
+</html>

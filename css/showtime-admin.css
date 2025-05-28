@@ -1,0 +1,172 @@
+/* showtime-admin.css */
+
+/* Định dạng popup quản lý suất chiếu */
+#manage-showtimes-popup .popup-content {
+    max-width: 1000px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background-color: #1C2526; /* Nền đen */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Tiêu đề popup */
+#manage-showtimes-popup h2 {
+    margin-bottom: 20px;
+    color: #FFFFFF; /* Chữ trắng */
+}
+
+/* Định dạng nút "Thêm Suất Chiếu" */
+#add-showtime-btn {
+    background-color: #FFC107; /* Màu vàng */
+    color: #000000; /* Chữ đen */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+#add-showtime-btn:hover {
+    background-color: #E0A800; /* Vàng đậm hơn khi hover */
+}
+
+/* Định dạng bảng suất chiếu */
+#showtimes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#showtimes-table th,
+#showtimes-table td {
+    border: 1px solid #FFFFFF; /* Viền trắng */
+    padding: 10px;
+    text-align: left;
+    color: #FFFFFF; /* Chữ trắng */
+}
+
+#showtimes-table th {
+    background-color: #ff4d4d; /* Header đỏ */
+    color: #FFFFFF; /* Chữ trắng */
+    font-weight: bold;
+}
+
+#showtimes-table tr:nth-child(even) {
+    background-color: #2E2E2E; /* Hàng chẵn xám đậm */
+}
+
+#showtimes-table tr:nth-child(odd) {
+    background-color: #1C2526; /* Hàng lẻ đen */
+}
+
+#showtimes-table tr:hover {
+    background-color: #444444; /* Hiệu ứng hover xám nhạt */
+}
+
+/* Định dạng nút Sửa và Xóa trong bảng */
+#showtimes-table .edit,
+#showtimes-table .delete {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#showtimes-table .edit {
+    background-color: #28A745; /* Xanh lá */
+    color: #FFFFFF; /* Chữ trắng */
+}
+
+#showtimes-table .edit:hover {
+    background-color: #218838; /* Xanh lá đậm hơn khi hover */
+}
+
+#showtimes-table .delete {
+    background-color: #ff4d4d; /* Đỏ */
+    color: #FFFFFF; /* Chữ trắng */
+}
+
+#showtimes-table .delete:hover {
+    background-color: #CC0000; /* Đỏ đậm hơn khi hover */
+}
+
+/* Định dạng popup form thêm/sửa suất chiếu */
+#add-showtime-popup .popup-content {
+    max-width: 500px;
+    background-color: #1C2526; /* Nền đen */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Tiêu đề form */
+#add-showtime-popup h2 {
+    margin-bottom: 20px;
+    color: #FFFFFF; /* Chữ trắng */
+}
+
+/* Định dạng form thêm/sửa suất chiếu */
+#add-showtime-form .form-group {
+    margin-bottom: 15px;
+}
+
+#add-showtime-form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #FFFFFF; /* Chữ trắng */
+    font-weight: bold;
+}
+
+#add-showtime-form input,
+#add-showtime-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #FFFFFF; /* Viền trắng */
+    border-radius: 3px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: #2E2E2E; /* Nền input xám đậm */
+    color: #FFFFFF; /* Chữ trắng */
+}
+
+#add-showtime-form input:focus,
+#add-showtime-form select:focus {
+    outline: none;
+    border-color: #FFC107; /* Viền vàng khi focus */
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.3);
+}
+
+/* Định dạng nút submit trong form */
+#submit-showtime-btn {
+    background-color: #FFC107; /* Màu vàng */
+    color: #000000; /* Chữ đen */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+#submit-showtime-btn:hover {
+    background-color: #E0A800; /* Vàng đậm hơn khi hover */
+}
+
+/* Định dạng nút đóng popup */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #FFFFFF; /* Chữ trắng */
+}
+
+.close-btn:hover {
+    color: #FFC107; /* Vàng khi hover */
+}

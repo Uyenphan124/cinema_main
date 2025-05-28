@@ -1,0 +1,241 @@
+/* admin.css */
+
+/* Popup styles */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex; /* Đã xóa !important */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Đảm bảo class .hidden được định nghĩa */
+.hidden {
+    display: none !important;
+}
+
+/* Phần còn lại của admin.css giữ nguyên */
+.popup-content {
+    background: #1C2526;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 1200px;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+}
+
+.popup-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: white;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+#submit-movie-btn {
+    width: 100%;
+    padding: 10px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#submit-movie-btn:hover {
+    background: #e60000;
+}
+
+#movies-table,
+#users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#movies-table th,
+#movies-table td,
+#users-table th,
+#users-table td {
+    border: 1px solid #444;
+    padding: 8px;
+    text-align: left;
+    color: white;
+}
+
+#movies-table th,
+#users-table th {
+    background: #ff4d4d;
+    color: white;
+}
+
+#movies-table td img {
+    width: 100px;
+    height: auto;
+}
+
+#movies-table button,
+#users-table button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+#movies-table button.edit,
+#users-table button.edit {
+    background: #4CAF50;
+    color: white;
+}
+
+#movies-table button.delete,
+#users-table button.delete {
+    background: #f44336;
+    color: white;
+}
+
+#add-movie-btn {
+    padding: 10px 20px;
+    background: #FFC107;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+#add-movie-btn:hover {
+    background: #e6b800;
+}
+
+.filter-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-section input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    flex: 1;
+}
+
+/* Ví dụ cho popup sửa phim */
+.edit-movie-popup, .popup-edit-movie {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+    /* Các style khác giữ nguyên */
+}
+
+/* Thêm vào admin.css hoặc trong <style> */
+.popup-movie-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+    background: #1a1a1a;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 24px;
+}
+.popup-movie-form.hidden {
+    display: none !important;
+}
+/* Nền mờ */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 1999;
+    display: none;
+}
+.popup-overlay.active {
+    display: block;
+}
+
+/* Mở rộng popup sửa phim */
+.popup-movie-form,
+.edit-movie-popup,
+.popup-edit-movie,
+.popup-content {
+    max-width: 800px;    /* Tăng chiều rộng tối đa */
+    width: 95%;          /* Tăng chiều rộng mặc định */
+}
+
+/* Nút hủy trong popup: giống nút sửa, màu đỏ, giãn cách dưới */
+.cancel-btn,
+#cancel-movie-btn {
+    background: #f44336;
+    color: white;
+    font-size: 1.2em;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 30px;   /* Giãn cách dưới xa hơn */
+    transition: background 0.2s;
+    display: inline-block;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.cancel-btn:hover,
+#cancel-movie-btn:hover {
+    background: #d32f2f;
+}
